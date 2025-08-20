@@ -21,11 +21,13 @@ export default function Webcam() {
                 const all = await navigator.mediaDevices.enumerateDevices();
                 const cams = all.filter((d) => d.kind === 'videoinput');
                 setDevices(cams);
-                if (cams.length && !selectDeviceId) {
+                if (cams.length && !selectedDeviceId) {
                     setSelectedDeviceId(cams[0].deviceId);
                 }
-            } catch {
-                setError('Failed to enumerate devices');
+            } catch (e) {
+                console.warn('enumerateDevices failed:', e);
+                const msg = `Device list error: ${e?.name || 'Error'}${e?.message ? ` - ${e.message}` : ''}`;
+                setError(msg);
             }
         }
         enumerate();
@@ -37,7 +39,9 @@ export default function Webcam() {
 
         try {
             const constraints = {
-                video: { facingMode: 'user' },
+                video: selectedDeviceId
+                    ? { deviceId: { exact: selectedDeviceId } }
+                    : { facingMode: 'user' },
                 audio: false,
             };
 
@@ -49,6 +53,11 @@ export default function Webcam() {
                 await videoRef.current.play();
             }
             setIsStreaming(true);
+            try {
+                const all = await navigator.mediaDevices.enumerateDevices();
+                const cams = all.filter((d) => d.kind === 'videoinput');
+                setDevices(cams);
+            } catch { }
         } catch (e) {
             const name = e.name || 'Error';
             const msg =
