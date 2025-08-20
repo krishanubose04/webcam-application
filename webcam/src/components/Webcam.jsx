@@ -6,9 +6,30 @@ import styles from './Webcam.module.css';
 export default function Webcam() {
     const [isStreaming, setIsStreaming] = useState(false);
     const videoRef = useRef(null);
-
     const streamRef = useRef(null);
     const [error, setError] = useState(null);
+    const [devices, setDevices] = useState([]);
+    const [selectedDeviceId, setSelectedDeviceId] = useState('');
+
+    useEffect(() => {
+        async function enumerate() {
+            try {
+                if (!navigator.mediaDevices?.enumerateDevices) {
+                    setError('Media devices API not supported in this browser.');
+                    return;
+                }
+                const all = await navigator.mediaDevices.enumerateDevices();
+                const cams = all.filter((d) => d.kind === 'videoinput');
+                setDevices(cams);
+                if (cams.length && !selectDeviceId) {
+                    setSelectedDeviceId(cams[0].deviceId);
+                }
+            } catch {
+                setError('Failed to enumerate devices');
+            }
+        }
+        enumerate();
+    }, [selectedDeviceId]);
 
     async function start() {
         setError(null);
@@ -61,6 +82,20 @@ export default function Webcam() {
         <div className={styles.container}>
             <h1 className={styles.header}> Webcam Demo </h1>
             <div className={styles.controls}>
+                <label htmlFor="camera" className={styles.label}>Camera:</label>
+                <select
+                    id="camera"
+                    className={styles.select}
+                    value={selectedDeviceId}
+                    onChange={(e) => setSelectedDeviceId(e.target.value)}
+                    disabled={!devices.length || isStreaming}
+                >
+                    {devices.map((d, idx) => (
+                        <option key={d.deviceId || idx} value={d.deviceId}>
+                            {d.label || `Camera ${idx + 1}`}
+                        </option>
+                    ))}
+                </select>
                 {!isStreaming ? (
                     <button className={styles.button} onClick={start}>Start</button>
                 ) : (

@@ -57,3 +57,11 @@
   font-size:12px;
   color: #666;
 }
+
+.label {
+  font-weight: 600;
+}
+
+.select {
+  padding: 0.4rem;
+}
