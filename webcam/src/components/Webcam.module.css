@@ -1,0 +1,40 @@
+.container {
+  max-width: 720px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.header {
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.button {
+  padding: 0.5rem 0.9rem;
+}
+
+.stage {
+  margin-top: 1rem;
+  background: #111;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.placeholder {
+  color: #aaa;
+  font-size: 14px;
+  text-align: center;
+  padding: 0 1rem;
+}
